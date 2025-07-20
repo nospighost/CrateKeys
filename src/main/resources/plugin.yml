@@ -1,0 +1,7 @@
+name: CrateKeys
+version: '1.0'
+main: org.ghostmod.crateKeys.CrateKeys
+api-version: '1.21'
+authors: [ nospighost ]
+depend: [ TryLibs ]
+load: POSTWORLD
