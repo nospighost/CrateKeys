@@ -1,7 +1,8 @@
 package org.ghostmod.crateKeys;
 
+
+
 import com.trynocs.tryLibs.TryLibs;
-import com.trynocs.tryLibs.api.TryLibsAPI;
 import com.trynocs.tryLibs.utils.database.DatabaseHandler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -14,18 +15,16 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 
 public class GUI implements Listener {
     public static Inventory inv = Bukkit.createInventory(null, 27, "§bCrate Keys");
-    private TryLibsAPI tryLibsAPI;
+    private final DatabaseHandler databaseHandler = TryLibs.getPlugin().getDatabaseHandler();
     public GUI() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             Bukkit.getLogger().warning("PlaceholderAPI ist nicht installiert! ");
         }
-        RegisteredServiceProvider<TryLibsAPI> provider = Bukkit.getServer().getServicesManager().getRegistration(TryLibsAPI.class);
-        tryLibsAPI = provider.getProvider();
+
     }
 
 
@@ -125,7 +124,7 @@ public class GUI implements Listener {
     }
 
     private double getPlayerGems(Player player) {
-        return tryLibsAPI.getDatabaseHandler().loadDouble("economy", player.getUniqueId(), "gems.balance", 0.0);
+        return databaseHandler.loadDouble("economy", player.getUniqueId(), "gems.balance", 0.0);
     }
 
 }
