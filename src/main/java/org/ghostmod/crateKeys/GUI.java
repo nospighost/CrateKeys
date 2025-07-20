@@ -1,8 +1,6 @@
 package org.ghostmod.crateKeys;
 
-import com.trynocs.tryLibs.TryLibs;
 import com.trynocs.tryLibs.api.TryLibsAPI;
-import com.trynocs.tryLibs.utils.database.DatabaseHandler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
