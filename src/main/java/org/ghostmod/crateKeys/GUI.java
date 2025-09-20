@@ -1,6 +1,8 @@
 package org.ghostmod.crateKeys;
 
+import com.trynocs.tryLibs.TryLibs;
 import com.trynocs.tryLibs.api.TryLibsAPI;
+import com.trynocs.tryLibs.utils.database.DatabaseHandler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,53 +14,63 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 
 public class GUI implements Listener {
     public static Inventory inv = Bukkit.createInventory(null, 27, "§bCrate Keys");
+    private TryLibs tryLibs = TryLibs.getPlugin();
+
+    private final DatabaseHandler databaseHandler = tryLibs.getPlugin().getDatabaseHandler();
     private TryLibsAPI tryLibsAPI;
-    public GUI() {
+    private FileConfiguration config;
+    public GUI(FileConfiguration config) {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             Bukkit.getLogger().warning("PlaceholderAPI ist nicht installiert! P");
         }
-        RegisteredServiceProvider<TryLibsAPI> provider = Bukkit.getServer().getServicesManager().getRegistration(TryLibsAPI.class);
-        tryLibsAPI = provider.getProvider();
+        this.config = config;
     }
 
 
-    public static void createGUI(Player player, Inventory inv) {
+    public  void createGUI(Player player, Inventory inv) {
         ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta glassMeta = glass.getItemMeta();
         glassMeta.setDisplayName("§7");
+        glassMeta.setCustomModelData(config.getInt("paperCustomData")); // Weißes Quadrat
         glass.setItemMeta(glassMeta);
 
         for (int i = 0; i < inv.getSize(); i++) {
             inv.setItem(i, glass);
         }
 
-        ItemStack chest = new ItemStack(Material.CHEST);
+        Material slot1 = Material.valueOf(config.getString("firstChestSlotMaterial").toUpperCase()) ;
+        ItemStack chest = new ItemStack(slot1);
         ItemMeta chestMeta = chest.getItemMeta();
-        chestMeta.setDisplayName("§e§lVote Kiste");
+        chestMeta.setDisplayName((String) config.get("firstChestName"));
         chest.setItemMeta(chestMeta);
         inv.setItem(11, chest);
 
-        ItemStack BetaChest = new ItemStack(Material.ENDER_CHEST);
+        Material slot2 = Material.valueOf(config.getString("secondChestSlotMaterial").toUpperCase()) ;
+        ItemStack BetaChest = new ItemStack(slot2);
         ItemMeta BetaChestMeta = BetaChest.getItemMeta();
-        BetaChestMeta.setDisplayName("§3§lBeta Kiste");
+        BetaChestMeta.setDisplayName((String) config.get("secondChestName"));
         BetaChest.setItemMeta(BetaChestMeta);
         inv.setItem(13, BetaChest);
 
+
+        Material slot3 = Material.valueOf(config.getString("thirdChestName").toUpperCase()) ;
         ItemStack eventChest = new ItemStack(Material.END_PORTAL_FRAME);
         ItemMeta eventChestMeta = eventChest.getItemMeta();
-        eventChestMeta.setDisplayName("§c§lEvent Kiste");
+        eventChestMeta.setDisplayName((String) config.get("thirdChestName"));
         eventChest.setItemMeta(eventChestMeta);
         inv.setItem(15, eventChest);
 
-        ItemStack gems = new ItemStack(Material.EMERALD);
+
+        Material gemsMaterial = Material.valueOf(config.getString("gemsMaterial").toUpperCase()) ;
+        ItemStack gems = new ItemStack(gemsMaterial);
         ItemMeta gemsMeta = gems.getItemMeta();
-        String placeholderDisplay = PlaceholderAPI.setPlaceholders(player, "§a§lGems: %bpeco_gems%");
-        gemsMeta.setDisplayName("Deine Gems: " + placeholderDisplay);
+        String title = (String) config.get("gemsName");
+        title.replace("%bpeco_gems%", PlaceholderAPI.setPlaceholders(player, "%bpeco_gems%"));
+        gemsMeta.setDisplayName(title);
         gems.setItemMeta(gemsMeta);
         inv.setItem(22, gems);
 
@@ -69,7 +81,7 @@ public class GUI implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        FileConfiguration config = CrateKeys.getInstance().getConfig();
+        FileConfiguration config = Main.getInstance().getConfig();
         Inventory inv = event.getClickedInventory();
         Player player = (Player) event.getWhoClicked();
         ItemStack item = event.getCurrentItem();
@@ -117,13 +129,13 @@ public class GUI implements Listener {
     }
 
     private void executeConsoleCommand(String command) {
-        Bukkit.getScheduler().runTask(CrateKeys.getInstance(), () -> {
+        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         });
     }
 
     private double getPlayerGems(Player player) {
-        return tryLibsAPI.getDatabaseHandler().loadDouble("economy", player.getUniqueId(), "gems.balance", 0.0);
+        return databaseHandler.loadDouble("economy", player.getUniqueId(), "gems.balance", 0.0);
     }
 
 }
