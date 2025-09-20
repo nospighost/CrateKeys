@@ -1,8 +1,5 @@
 package org.ghostmod.crateKeys;
 
-import com.trynocs.tryLibs.TryLibs;
-import com.trynocs.tryLibs.api.TryLibsAPI;
-import com.trynocs.tryLibs.utils.database.DatabaseHandler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,24 +12,25 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 
 public class GUI implements Listener {
     public static Inventory inv = Bukkit.createInventory(null, 27, "§bCrate Keys");
-    private TryLibs tryLibs = TryLibs.getPlugin();
-
-    private final DatabaseHandler databaseHandler = tryLibs.getPlugin().getDatabaseHandler();
-    private TryLibsAPI tryLibsAPI;
     private FileConfiguration config;
+
     public GUI(FileConfiguration config) {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            Bukkit.getLogger().warning("PlaceholderAPI ist nicht installiert! P");
+            Bukkit.getLogger().warning("PlaceholderAPI ist nicht installiert!");
         }
         this.config = config;
     }
 
 
     public  void createGUI(Player player, Inventory inv) {
-        ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemStack glass = new ItemStack(Material.PAPER);
         ItemMeta glassMeta = glass.getItemMeta();
         glassMeta.setDisplayName("§7");
         glassMeta.setCustomModelData(config.getInt("paperCustomData")); // Weißes Quadrat
@@ -46,6 +44,9 @@ public class GUI implements Listener {
         ItemStack chest = new ItemStack(slot1);
         ItemMeta chestMeta = chest.getItemMeta();
         chestMeta.setDisplayName((String) config.get("firstChestName"));
+        List<String> lore1 = new ArrayList<>();
+        lore1.add("§a" +config.getString("firstChest.Price"));
+        chestMeta.setLore(lore1);
         chest.setItemMeta(chestMeta);
         inv.setItem(11, chest);
 
@@ -53,23 +54,28 @@ public class GUI implements Listener {
         ItemStack BetaChest = new ItemStack(slot2);
         ItemMeta BetaChestMeta = BetaChest.getItemMeta();
         BetaChestMeta.setDisplayName((String) config.get("secondChestName"));
+        List<String> lore2 = new ArrayList<>();
+        lore2.add("§a" +config.getString("secondChest.Price"));
+        BetaChestMeta.setLore(lore2);
         BetaChest.setItemMeta(BetaChestMeta);
         inv.setItem(13, BetaChest);
 
 
-        Material slot3 = Material.valueOf(config.getString("thirdChestName").toUpperCase()) ;
-        ItemStack eventChest = new ItemStack(Material.END_PORTAL_FRAME);
+        Material slot3 = Material.valueOf(config.getString("thirdChestSlotMaterial").toUpperCase()) ;
+        ItemStack eventChest = new ItemStack(slot3);
         ItemMeta eventChestMeta = eventChest.getItemMeta();
-        eventChestMeta.setDisplayName((String) config.get("thirdChestName"));
+        eventChestMeta.setDisplayName(config.getString("thirdChestName"));
+        List<String> lore3 = new ArrayList<>();
+        lore3.add("§a" + config.getString("thirdChest.Price"));
+        eventChestMeta.setLore(lore3);
         eventChest.setItemMeta(eventChestMeta);
         inv.setItem(15, eventChest);
 
 
-        Material gemsMaterial = Material.valueOf(config.getString("gemsMaterial").toUpperCase()) ;
-        ItemStack gems = new ItemStack(gemsMaterial);
+        ItemStack gems = new ItemStack(Material.valueOf(config.getString("gemsMaterial").toUpperCase()));
         ItemMeta gemsMeta = gems.getItemMeta();
         String title = (String) config.get("gemsName");
-        title.replace("%bpeco_gems%", PlaceholderAPI.setPlaceholders(player, "%bpeco_gems%"));
+        title = PlaceholderAPI.setPlaceholders(player, title);
         gemsMeta.setDisplayName(title);
         gems.setItemMeta(gemsMeta);
         inv.setItem(22, gems);
@@ -96,34 +102,46 @@ public class GUI implements Listener {
 
         switch (slot) {
             case 11 -> {
-                int price = config.getInt("VoteCrate.Price");
+                if (Material.valueOf(config.getString("firstChestSlotMaterial")) == Material.BARRIER) {
+                    return;
+                }
+                int price = config.getInt("firstChest.Price");
                 if (gemsCount < price) {
-                    player.sendMessage("§cDu hast nicht genug Gems für eine VoteKiste!");
+                    player.sendMessage(Main.prefix + "§cDu hast nicht genug Gems für die " + config.get("firstChestName"));
                     return;
                 }
                 player.closeInventory();
-                player.sendMessage("§aDu hast eine VoteKiste gekauft!");
+                player.sendMessage("§aDu hast dir die " + config.get("firstChestName") + " gekauft!");
                 executeConsoleCommand("syseco gems remove " + player.getName() + " " + price);
+                executeConsoleCommand(config.getString("firstChest.command").replace("%player%", player.getName()));
             }
             case 13 -> {
-                int price = config.getInt("Beta Kiste.Price");
+                if (Material.valueOf(config.getString("secondChestSlotMaterial")) == Material.BARRIER) {
+                    return;
+                }
+                int price = config.getInt("secondChest.Price");
                 if (gemsCount < price) {
-                    player.sendMessage("§cDu hast nicht genug Gems für eine Beta Kiste!");
+                    player.sendMessage(Main.prefix + "§cDu hast nicht genug Gems für die " + config.get("secondChestName"));
                     return;
                 }
                 player.closeInventory();
-                player.sendMessage("§aDu hast eine BetaKiste gekauft!");
+                player.sendMessage("§aDu hast dir die " + config.get("secondChestName") + " gekauft!");
                 executeConsoleCommand("syseco gems remove " + player.getName() + " " + price);
+                executeConsoleCommand(config.getString("secondChest.command").replace("%player%", player.getName()));
             }
             case 15 -> {
-                int price = config.getInt("EventCase.Price");
+                if (Material.valueOf(config.getString("thirdChestSlotMaterial")) == Material.BARRIER) {
+                    return;
+                }
+                int price = config.getInt("thirdChest.Price");
                 if (gemsCount < price) {
-                    player.sendMessage("§cDu hast nicht genug Gems für eine EventCase!");
+                    player.sendMessage(Main.prefix + "§cDu hast nicht genug Gems für die " + config.get("thirdChestName"));
                     return;
                 }
                 player.closeInventory();
-                player.sendMessage("§aDu hast eine EventKiste gekauft!");
+                player.sendMessage("§aDu hast dir die " + config.get("thirdChestName") + " gekauft!");
                 executeConsoleCommand("syseco gems remove " + player.getName() + " " + price);
+                executeConsoleCommand(config.getString("thirdChest.command").replace("%player%", player.getName()));
             }
         }
     }
@@ -135,7 +153,18 @@ public class GUI implements Listener {
     }
 
     private double getPlayerGems(Player player) {
-        return databaseHandler.loadDouble("economy", player.getUniqueId(), "gems.balance", 0.0);
+        String raw = PlaceholderAPI.setPlaceholders(player, "%bpeco_gems%");
+        if (raw == null) return 0.0;
+        raw = raw.replaceAll("[^0-9.,]", "").replace(",", ".");
+        if (raw.isEmpty()) return 0.0;
+        try {
+            return Double.parseDouble(raw);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
     }
+
+
+
 
 }

@@ -1,27 +1,22 @@
-database:
-  type: mysql
-  mysql:
-    host: localhost
-    port: 3306
-    database: admin
-    username: admin
-    password: 1234
-VoteCrate:
+firstChest:
   Price: 100
-Beta Kiste:
+  command: crate giveKey beta %player% 1
+secondChest:
   Price: 250
-EventCase:
+  command: crate giveKey blocky %player% 1
+thirdChest:
   Price: 500
+  command:
 
 paperCustomData: 1000
 firstChestSlotMaterial: BARRIER # CAPS!
 firstChestName: "§eVote Kiste"
 secondChestSlotMaterial: ENDER_CHEST # CAPS!
 secondChestName: "§eKiste 2"
-thirdChestSlotMaterial: ""
+thirdChestSlotMaterial: SHULKER_BOX
 thirdChestName: "§eKiste 3"
 gemsMaterial: EMERALD
-gemsName: "Du hast: %bpeco_gems%"
+gemsName: "Du hast: %bpeco_gems% Gems!"
 
 
 

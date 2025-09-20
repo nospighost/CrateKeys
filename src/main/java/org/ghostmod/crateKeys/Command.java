@@ -28,11 +28,11 @@ public class Command extends BaseCommand {
     @CommandCompletion("@players")
     public void onSubcommand(Player player, String name, int amount) {
         if (amount <= 0) {
-            player.sendMessage("§cDie Anzahl muss größer als 0 sein.");
+            player.sendMessage(Main.prefix + "§cDie Anzahl muss größer als 0 sein.");
             return;
         }
 
-        player.sendMessage("§aDu hast §e" + amount + "§a Games von §e" + name + "§a entfernt.");
+        player.sendMessage(Main.prefix + "§aDu hast §e" + amount + "§a Games von §e" + name + "§a entfernt.");
         int countBefore = TryLibs.getPlugin().getDatabaseHandler().loadInt("economy", player.getUniqueId(), "gems.balance", 0);
         int newCount = countBefore -= amount;
         TryLibs.getPlugin().getDatabaseHandler().saveInt("economy", player.getUniqueId(), "gems.balance", newCount);
@@ -40,3 +40,5 @@ public class Command extends BaseCommand {
     }
 
 }
+
+

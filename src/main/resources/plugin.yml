@@ -3,5 +3,4 @@ version: '1.0'
 main: org.ghostmod.crateKeys.Main
 api-version: '1.21'
 authors: [ nospighost ]
-depend: [ TryLibs ]
-load: POSTWORLD
+

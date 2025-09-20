@@ -16,6 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
+        <directory>D:\Dokumente\Server\plugins</directory>
         <plugins>
             <!-- Compiler Plugin -->
             <plugin>
@@ -128,11 +129,6 @@
             <groupId>co.aikar</groupId>
             <artifactId>acf-paper</artifactId>
             <version>0.5.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.GhostLibs</groupId>
-            <artifactId>GhostLibs</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>
